@@ -1,0 +1,94 @@
+
+2024-06-13T04:41:32.092525
+================================ System Message ================================
+
+You will get information about a codebase that is currently on disk in the current folder.
+The user will ask you to write a script that runs the code in a specific way.
+You will answer with code blocks that include all the necessary terminal commands.
+Do not install globally. Do not use sudo.
+Do not explain the code, just give the commands.
+Do not use placeholders, use example values (like . for a folder argument) if necessary.
+
+
+================================ Human Message =================================
+
+
+        Make a unix script that
+        a) installs dependencies
+        b) runs all necessary parts of the codebase (in parallel if necessary)
+        
+Information about the codebase:
+
+```
+File: wp-create-page.php
+1 <?php
+2 require_once 'vendor/autoload.php';
+3 
+4 use GuzzleHttp\Client;
+5 
+6 class WpApi {
+7     private $apiUrl;
+8     private $username;
+9     private $password;
+10 
+11     public function __construct($apiUrl, $username, $password) {
+12         $this->apiUrl = $apiUrl;
+13         $this->username = $username;
+14         $this->password = $password;
+15     }
+16 
+17     public function createPage($title, $content) {
+18         $client = new Client();
+19         $auth = base64_encode("{$this->username}:{$this->password}");
+20         $headers = [
+21             'Authorization' => "Basic {$auth}",
+22             'Content-Type' => 'application/json'
+23         ];
+24 
+25         $data = [
+26             'title' => $title,
+27             'content' => $content,
+28             'status' => 'publish'
+29         ];
+30 
+31         $response = $client->post($this->apiUrl . '/wp/v2/pages', [
+32             'headers' => $headers,
+33             'json' => $data
+34         ]);
+35 
+36         if ($response->getStatusCode() == 201) {
+37             echo "Page created successfully!";
+38         } else {
+39             echo "Error creating page: " . $response->getReasonPhrase();
+40         }
+41     }
+42 }
+43 
+44 $apiUrl = 'https://example.com/wp-json/wp/v2'; // Replace with your WordPress API URL
+45 $username = 'your_username'; // Replace with your WordPress username
+46 $password = 'your_password'; // Replace with your WordPress password
+47 
+48 $wpApi = new WpApi($apiUrl, $username, $password);
+49 $wpApi->createPage('My New Page', 'This is the content of my new page');
+
+File: composer.json
+1 {
+2     "require": {
+3         "guzzlehttp/guzzle": "^7.2"
+4     }
+5 }
+
+```
+
+================================== Ai Message ==================================
+
+Here is the Unix script that installs dependencies and runs the codebase:
+```
+#!/bin/bash
+
+# Install dependencies
+php composer.phar install
+
+# Run the code
+php wp-create-page.php
+```
